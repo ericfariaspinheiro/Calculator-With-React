@@ -259,7 +259,7 @@ class App extends React.Component {
         toBeCalculated.splice(pos-2, 4, "-", result)
       } else {
         result = parseFloat(toBeCalculated[pos-1]) + parseFloat(toBeCalculated[pos+1]);
-        toBeCalculated.splice(pos-1, 3, result)
+        toBeCalculated.splice(pos-1, 3, result);
       }
     }
 
