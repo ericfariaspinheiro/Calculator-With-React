@@ -6,6 +6,7 @@ const numbers = [
     keyName: "seven",
     keySymbol: 7
   },
+
   {
     keyName: "eight",
     keySymbol: 8
@@ -265,7 +266,7 @@ class App extends React.Component {
     while (toBeCalculated.indexOf("-") > 0){
       let pos = toBeCalculated.findIndex(op=> op==="-");
       result = parseFloat(toBeCalculated[pos-1]) - parseFloat(toBeCalculated[pos+1]);
-      toBeCalculated.splice(pos-1, 3, result)
+      toBeCalculated.splice(pos-1, 3, result);
     }
 
     this.setState(
