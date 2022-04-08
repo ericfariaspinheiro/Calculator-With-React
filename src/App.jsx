@@ -238,7 +238,7 @@ class App extends React.Component {
   handleClickResult = (e) => {
     const currentPressedEq = e.target.textContent;
     let result = this.state.currentValue;
-    let toBeCalculated = (this.state.operation).split(" ");
+    let toBeCalculated = (this.state.operation).split(" ")
 
     while (toBeCalculated.indexOf("X") > 0) {
       let pos = toBeCalculated.findIndex(op=> op==="X");
