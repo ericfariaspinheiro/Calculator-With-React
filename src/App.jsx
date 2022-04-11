@@ -1,148 +1,123 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Keyboard from './components/keyboard.jsx';
 import Display from './components/display.jsx';
 import calculate from './logic/calculate.jsx';
 import './App.css'
 
-class App extends React.Component {
-  state = {
-    operation: "0",
-    currentValue: "0",
-    negative: false,
-    equality: false
+export default function App () {  
+  const [operation, setOperation] = useState("0");
+  const [currentValue, setCurrentValue] = useState("0");
+  const [negative, setNegative] = useState(false);
+  const [equality, setEquality] = useState(false);
+
+  const handleClickClear = ()=>{
+    setCurrentValue("0");
+    setOperation("0");
+    return;
   }
 
-  handleClickClear = ()=>{
-    this.setState(
-      () => ({
-      currentValue: "0",
-      operation: "0"
-    }))
-  }
-
-  handleClickNumbers = (e) => {
+  const handleClickNumbers = (e) => {
     const currentPressed = e.target.textContent;
-
-    if(this.state.equality){
-      return(this.setState({currentValue: currentPressed, operation: currentPressed, equality: false}));
+    
+    if(equality){
+      setCurrentValue(currentPressed);
+      setOperation(currentPressed)
+      setEquality(false);
+      return;
     } 
 
-    this.setState(
-    (previousState)=> {
-      if(previousState.currentValue === "0"){
-        return ({currentValue: currentPressed, operation: currentPressed})
+    if(currentValue === "0"){
+      setCurrentValue(currentPressed);
+      setOperation(currentPressed);
+      return;
+    }
+
+    if(currentValue === "+" || currentValue === "/" || currentValue === "-" || currentValue === "X"){
+      if(negative){
+        setCurrentValue(currentPressed);
+        setOperation(operation + currentPressed);
+        setNegative(false);
+        return;
       }
 
-      if(previousState.currentValue === "+" || previousState.currentValue === "/" || previousState.currentValue === "-" || previousState.currentValue === "X"){
-        return (this.state.negative ? {currentValue: currentPressed, operation: previousState.operation + currentPressed, negative: false} : {currentValue: currentPressed, operation: previousState.operation + " " + currentPressed})
-      }
+      setCurrentValue(currentPressed);
+      setOperation(operation + " " + currentPressed);
+      return;      
+    }
 
-      return {currentValue: previousState.currentValue + currentPressed, operation: previousState.operation + currentPressed}
-      }
-    )
+    setCurrentValue(currentValue + currentPressed);
+    setOperation(operation + currentPressed);
+    return;
   }
-
-  handleClickOperations = (e) => {
+  
+  const handleClickOperations = (e) => {
     const currentPressedOp = e.target.textContent;
-    const previousOperation = this.state.currentValue;
 
-    if(this.state.equality){
-      this.setState((previousState)=> {
-            return ({
-             currentValue: currentPressedOp,
-             operation: previousState.currentValue + " " + currentPressedOp,
-             equality: false
-            })
-          })
+    if(equality){
+      setCurrentValue(currentPressedOp);
+      setOperation(currentValue + " " + currentPressedOp);
+      setEquality(false);
+      return;
     }
 
-    if(previousOperation === "+" || previousOperation === "-" || previousOperation === "X" || previousOperation === "/"){  
+    if(currentValue === "+" || currentValue === "-" || currentValue === "X" || currentValue === "/"){  
       if(currentPressedOp === "-"){
-        return this.setState((previousState)=> {
-            return ({
-              currentValue: currentPressedOp,
-              operation: previousState.operation + " " + currentPressedOp,
-              negative: true
-            })
-          })
+        setCurrentValue(currentPressedOp);
+        setOperation(operation + " " + currentPressedOp);
+        setNegative(true);
+        return;
       }
 
-      return this.setState(
-        (previousState)=> {
-          if(this.state.negative){
-            const replacerP = (previousState.operation).slice(0, -4);
-            return ({
-              currentValue: currentPressedOp,
-              operation: replacerP + " " + currentPressedOp,
-              negative: false
-            })
-          }
-          
-          
-        const replacerN = (previousState.operation).slice(0, -2);
-        return ({
-          currentValue: currentPressedOp,
-          operation: replacerN + " " + currentPressedOp
-        })
-        }
-      )
+      if(negative){
+        const replacerP = operation.slice(0, -4);
+
+        setCurrentValue(currentPressedOp);
+        setOperation(replacerP + " " + currentPressedOp);
+        setNegative(false);
+        return;
+      }
+      
+      const replacerN = operation.slice(0, -2);
+      setCurrentValue(currentPressedOp);
+      setOperation(replacerN + " " + currentPressedOp);
+      return;
     }
 
-    this.setState(
-    (previousState)=> {
-      return ({
-        currentValue: currentPressedOp,
-        operation: previousState.operation + " " + currentPressedOp
-        })
-      }
-    )
+    setCurrentValue(currentPressedOp);
+    setOperation(operation + " " + currentPressedOp);
+    return;
   }
 
-  handleClickFloat = () => {
-    if((this.state.currentValue).includes(".") === false){
-      this.setState(
-        (previousState)=> {
-          return ({
-            currentValue: previousState.currentValue + ".",
-            operation: previousState.operation + "."
-          })
-        }
-      )
+  const handleClickFloat = () => {
+    if(currentValue.includes(".") === false){
+      setCurrentValue(currentValue + ".");
+      setOperation(operation + ".");
     }
   }
 
-  handleClickResult = (e) => {
+  const handleClickResult = (e) => {
     const currentPressedEq = e.target.textContent;
-    const finalResult = calculate(this.state.operation, this.state.currentValue)
+    const finalResult = calculate(operation, currentValue)
 
-    this.setState(
-      (previousState)=> {
-        return ({
-          currentValue: finalResult,
-          operation: previousState.operation + " " + currentPressedEq + " " + finalResult,
-          equality: true
-        })
-      }
-    )
+    setCurrentValue(finalResult);
+    setOperation(operation + " " + currentPressedEq + " " + finalResult);
+    setEquality(true)
+    return;
   }
 
-  render(){
-    return (
-      <div id="calculator">
-        <Display 
-          operation = {this.state.operation}
-          currentValue = {this.state.currentValue}
-        />
-        <Keyboard 
-          clearValues={this.handleClickClear}
-          selectedNum={this.handleClickNumbers}
-          selectedOperation={this.handleClickOperations}
-          selectedEquals={this.handleClickResult}
-          selectedFloat={this.handleClickFloat}
-        />
-      </div>
-    )
-  }
+  return (
+    <div id="calculator">
+      <Display 
+        operation = {operation}
+        currentValue = {currentValue}
+      />
+      <Keyboard 
+        clearValues={handleClickClear}
+        selectedNum={handleClickNumbers}
+        selectedOperation={handleClickOperations}
+        selectedEquals={handleClickResult}
+        selectedFloat={handleClickFloat}
+      />
+    </div>
+  )
 }
-
-export default App;
