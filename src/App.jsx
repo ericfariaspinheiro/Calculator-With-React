@@ -21,7 +21,7 @@ export default function App () {
     
     if(equality){
       setCurrentValue(currentPressed);
-      setOperation(currentPressed)
+      setOperation(currentPressed);
       setEquality(false);
       return;
     } 
@@ -95,13 +95,13 @@ export default function App () {
     }
   }
 
-  const handleClickResult = (e) => {
-    const currentPressedEq = e.target.textContent;
-    const finalResult = calculate(operation, currentValue)
+  const handleClickResult = (event) => {
+    const currentPressedEq = event.target.textContent;
+    const finalResult = calculate(operation, currentValue);
 
     setCurrentValue(finalResult);
     setOperation(operation + " " + currentPressedEq + " " + finalResult);
-    setEquality(true)
+    setEquality(true);
     return;
   }
 
